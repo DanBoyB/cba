@@ -1,0 +1,35 @@
+#' A Function to generate table of costs and Benefits
+#'
+#' This takes standard appraisal parameters plus time savings  and costs estimated elsewhere
+#' to produce a table of discounted costs and benefits over the selected appraisal period.
+#' @param capCosts The capital costs of the proposed scheme
+#' @param costsYear The year in which capital costs are incurred (select single year for simplicity)
+#' @param appraisalPeriod The number of years over which the scheme should be appraised
+#' @param residualValuePeriod The numnber of years beyond the appraisal period where the scheme benefits can be taken as a residual value
+#' @param openingYear The proposed opening year for the scheme being appraised
+#' @param forecastYear A future year for which where scheme impacts have been forecast
+#' @param openTimeSav The estimated time savings (in hours) due to the scheme in the opening year
+#' @param forecastTimeSav The estimated time savings (in hours) due to the scheme in the forecast year
+#' @param aveVoT An average value of time assumed for the calculation of scheme benefits
+#' @param votGrowth The assummed annual growth in value of time
+#' @param discountRate The project discount rate used to convert future year prices to the price base year
+#' @param priceBaseYear The year that all appraisal prices are to be represented in
+#' @return A table of the undiscounted and discounted costs and benefits over the appraisal period.
+#' @keywords cba
+#' @export
+
+cbaTable <- function(capCosts, costsYear, appraisalPeriod, residualValuePeriod, openingYear, forecastYear, openTimeSav, forecastTimeSav, aveVoT, 
+                     votGrowth, discountRate, priceBaseYear) {
+    year <- c(format(Sys.Date(), "%Y"):((openingYear + appraisalPeriod + residualValuePeriod)-1))
+    modBenefits <- data.frame(Year = c(openingYear, forecastYear), Savings = c(openTimeSav, forecastTimeSav))
+    benGrowth <- tidy(lm(Savings ~ Year, data = modBenefits))
+
+    benefitsTable <- data.frame(Year = year)
+
+    benefitsTable <- benefitsTable %>%
+        mutate(undiscCosts = ifelse(Year == costsYear, capCosts, 0)) %>%
+        mutate(discCosts = undiscCosts / ((1 + discountRate) ^ (Year - priceBaseYear))) %>%
+        mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((1 + votGrowth) ^ (Year - priceBaseYear))) %>%
+        mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear)))
+
+}
