@@ -26,7 +26,7 @@ cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYea
     benGrowth <- tidy(lm(Savings ~ Year, data = modBenefits))
     
     benefitsTable <- data.frame(Year = year) %>% 
-        mutate(undiscCosts = costTable$total) %>%
+        mutate(undiscCosts = costTable$costs) %>%
         mutate(discCosts = undiscCosts / ((1 + discountRate) ^ (Year - priceBaseYear))) %>%
         mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((1 + votGrowth) ^ (Year - priceBaseYear))) %>%
         mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear)))

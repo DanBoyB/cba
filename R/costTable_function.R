@@ -8,17 +8,19 @@
 #' @export
 
 
-costTable <- function(baseCostFact, costProfile) {
+costTable <- function(costEst, priceBaseYear = 2011, openingYear, appraisalPeriod, residualValuePeriod, cpiBase = 103.8, cpiCostEst,
+                      sppf = 1.3, spl = 1.0, costYears = c(2022:2025), costProp = c(0.116, 0.437, 0.409, 0.038)) {
+    
+    costEst <- costEst * (cpiBase / cpiCostEst) * sppf * spl
+    
+    costProfile <- data_frame(year = c(priceBaseYear:((openingYear + appraisalPeriod + residualValuePeriod)-1))) %>% 
+        mutate(prop = ifelse(year %in% costYears, costProp, 0))
+    
+    
     costTable <- costProfile %>% 
-        mutate(construction = baseCostFact$totalSchemeBudget[1] * costProfile$construction) %>% 
-        mutate(supervision = baseCostFact$totalSchemeBudget[2] * costProfile$supervision) %>% 
-        mutate(archaeology = baseCostFact$totalSchemeBudget[3] * costProfile$archaeology) %>% 
-        mutate(advanceWorks = baseCostFact$totalSchemeBudget[4] * costProfile$advanceWorks) %>% 
-        mutate(residualNetwork = baseCostFact$totalSchemeBudget[5] * costProfile$residualNetwork) %>% 
-        mutate(landProperty = baseCostFact$totalSchemeBudget[6] * costProfile$landProperty) %>% 
-        mutate(planningDesign = baseCostFact$totalSchemeBudget[7] * costProfile$planningDesign) %>% 
-        mutate(total = construction + supervision + archaeology + advanceWorks + residualNetwork +
-                   landProperty + planningDesign)
+        mutate(costs = costEst * costProfile$prop) %>% 
+        select(year, costs)
+    
 }
 
 
