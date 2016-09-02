@@ -1,0 +1,10 @@
+library(tidyr)
+library(dplyr)
+library(broom)
+
+a <- costBreakdown(68.58, 3.25, 1.38, 3.92, 0.29, 15.59, 4.10)
+b <- baseCostFact(a, cpiBase = 102.2, cpiCostEst = 106.6)
+c <- costProfile(2011, 2018, 30, 0)
+d <- costTable(b, c)
+e <- cbaTable(d, 30, 0, 2018, 2035, 2, 4, 14.03, 0.02, 0.05, 2011)
+f <- cbaSummary(e)

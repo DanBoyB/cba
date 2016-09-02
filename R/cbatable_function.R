@@ -18,18 +18,19 @@
 #' @keywords cba
 #' @export
 
-cbaTable <- function(capCosts, costsYear, appraisalPeriod, residualValuePeriod, openingYear, forecastYear, openTimeSav, forecastTimeSav, aveVoT, 
+cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYear, forecastYear, openTimeSav, forecastTimeSav, aveVoT, 
                      votGrowth, discountRate, priceBaseYear) {
-    year <- c(format(Sys.Date(), "%Y"):((openingYear + appraisalPeriod + residualValuePeriod)-1))
+    
+    year <- c(priceBaseYear:((openingYear + appraisalPeriod + residualValuePeriod)-1))
     modBenefits <- data.frame(Year = c(openingYear, forecastYear), Savings = c(openTimeSav, forecastTimeSav))
     benGrowth <- tidy(lm(Savings ~ Year, data = modBenefits))
-
-    benefitsTable <- data.frame(Year = year)
-
-    benefitsTable <- benefitsTable %>%
-        mutate(undiscCosts = ifelse(Year == costsYear, capCosts, 0)) %>%
+    
+    benefitsTable <- data.frame(Year = year) %>% 
+        mutate(undiscCosts = costTable$total) %>%
         mutate(discCosts = undiscCosts / ((1 + discountRate) ^ (Year - priceBaseYear))) %>%
         mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((1 + votGrowth) ^ (Year - priceBaseYear))) %>%
         mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear)))
 
 }
+
+
