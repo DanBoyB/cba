@@ -1,4 +1,4 @@
-#' A Function to generate table of costs and Benefits
+#' Generates a table of costs and Benefits
 #'
 #' This takes standard appraisal parameters plus time savings  and costs estimated elsewhere
 #' to produce a table of discounted costs and benefits over the selected appraisal period.
@@ -8,8 +8,8 @@
 #' @param residualValuePeriod The numnber of years beyond the appraisal period where the scheme benefits can be taken as a residual value
 #' @param openingYear The proposed opening year for the scheme being appraised
 #' @param forecastYear A future year for which where scheme impacts have been forecast
-#' @param openTimeSav The estimated time savings (in hours) due to the scheme in the opening year
-#' @param forecastTimeSav The estimated time savings (in hours) due to the scheme in the forecast year
+#' @param timeSavings The estimated time savings (in hours) due to the scheme in the opening year and forecast year
+#' as a list, (i.e. c(x, y)). Can also use output by the timeSavings() function.
 #' @param aveVoT An average value of time assumed for the calculation of scheme benefits
 #' @param votGrowth The assummed annual growth in value of time
 #' @param discountRate The project discount rate used to convert future year prices to the price base year
@@ -18,11 +18,12 @@
 #' @keywords cba
 #' @export
 
-cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYear, forecastYear, openTimeSav, forecastTimeSav, aveVoT, 
+cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYear, forecastYear, timeSavings, aveVoT, 
                      votGrowth, discountRate, priceBaseYear) {
     
     year <- c(priceBaseYear:((openingYear + appraisalPeriod + residualValuePeriod)-1))
-    modBenefits <- data.frame(Year = c(openingYear, forecastYear), Savings = c(openTimeSav, forecastTimeSav))
+    modBenefits <- data.frame(Year = c(openingYear, forecastYear), Savings = timeSavings) %>% 
+        mutate(Savings = (Savings * aveVoT) / 1000000)
     benGrowth <- tidy(lm(Savings ~ Year, data = modBenefits))
     
     benefitsTable <- data.frame(Year = year) %>% 
@@ -30,7 +31,8 @@ cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYea
         mutate(discCosts = undiscCosts / ((1 + discountRate) ^ (Year - priceBaseYear))) %>%
         mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((1 + votGrowth) ^ (Year - priceBaseYear))) %>%
         mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear)))
-
+    
+    
 }
 
 

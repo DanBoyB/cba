@@ -2,3 +2,5 @@
 
 export(cbaSummary)
 export(cbaTable)
+export(costTable)
+export(timeSavings)

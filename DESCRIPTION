@@ -7,9 +7,9 @@ Author: Dan Brennan
 Maintainer: <dan.brennan@tii.ie>
 Description: Simple CBA analysis tools including tables of discounted costs and
     benefits and appraisal summary tables. More tools to be added over time.
-License: Unlimited
+License: MIT
 LazyData: TRUE
-Depends: R (>= 3.2.3), dplyr, broom
+Depends: R (>= 3.2.3), dplyr, broom, tidyr
 RoxygenNote: 5.0.1
 NeedsCompilation: no
 Packaged: 2016-08-11 20:48:57 UTC; dan
