@@ -10,6 +10,7 @@ Description: Simple CBA analysis tools including tables of discounted costs and
 License: MIT
 LazyData: TRUE
 Depends: R (>= 3.2.3), dplyr, broom, tidyr
+Suggests: testthat
 RoxygenNote: 5.0.1
 NeedsCompilation: no
 Packaged: 2016-08-11 20:48:57 UTC; dan
