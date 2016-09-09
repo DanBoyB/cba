@@ -19,18 +19,25 @@
 #' @export
 
 cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYear, forecastYear, timeSavings, aveVoT, 
-                     votGrowth, discountRate, priceBaseYear) {
+                     discountRate, priceBaseYear) {
     
     year <- c(priceBaseYear:((openingYear + appraisalPeriod + residualValuePeriod)-1))
     modBenefits <- data.frame(Year = c(openingYear, forecastYear), Savings = timeSavings) %>% 
         mutate(Savings = (Savings * aveVoT) / 1000000)
     benGrowth <- tidy(lm(Savings ~ Year, data = modBenefits))
     
+    
     benefitsTable <- data.frame(Year = year) %>% 
         mutate(undiscCosts = costTable$costs) %>%
         mutate(discCosts = undiscCosts / ((1 + discountRate) ^ (Year - priceBaseYear))) %>%
-        mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((1 + votGrowth) ^ (Year - priceBaseYear))) %>%
-        mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear)))
+        mutate(votGrowth = ifelse(year <= 2014, 1.04, 
+                                  ifelse(year >= 2015 & year <= 2019, 1.036,
+                                         ifelse(year >= 2020 & year <= 2024, 1.022,
+                                                ifelse(year >= 2025, 1.023,0)
+                                         )))) %>% 
+        mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((votGrowth) ^ (Year - priceBaseYear))) %>%
+        mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear))) %>% 
+        select(-votGrowth)
     
     
 }
