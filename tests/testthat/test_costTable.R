@@ -22,7 +22,19 @@ test_that("costTable outputs correct values 3", {
                                cpiBase = 103.8, cpiCostEst = 106.6, sppf = 1.3, spl = 1.0, costYears = c(2018), costProp = c(1))$costs), 50.634146)
 })
 
-test_that("costTable outputs correct values 3", {
-    expect_equal(sum(costTable(costEst = 40, priceBaseYear = 2011, openingYear = 2018, appraisalPeriod = 30, residualValuePeriod = 0,
-                               cpiBase = 103.8, cpiCostEst = 106.6, sppf = 1.3, spl = 1.0, costYears = c(2018), costProp = c(1))$costs), 50.634146)
+test_that("costTable outputs correct object size", {
+    
+    tempf <- function(a, b = 2, ...) {
+        argg <- c(as.list(environment()), list(...))
+    }
+    
+    x <- tempf(costEst = 10, priceBaseYear = 2011, openingYear = 2025, appraisalPeriod = 30, residualValuePeriod = 30,
+               cpiBase = 103.8, cpiCostEst = 106.6, sppf = 1.3, spl = 1.0,
+               costYears = c(2022:2025), costProp = c(0.116, 0.437, 0.409, 0.038))
+    
+    c <- costTable(costEst = 10, priceBaseYear = 2011, openingYear = 2025, appraisalPeriod = 30, residualValuePeriod = 30,
+                   cpiBase = 103.8, cpiCostEst = 106.6, sppf = 1.3, spl = 1.0,
+                   costYears = c(2022:2025), costProp = c(0.116, 0.437, 0.409, 0.038))
+    
+    expect_equal(nrow(c), ((x$openingYear + x$appraisalPeriod + x$residualValuePeriod) - x$priceBaseYear))
 })
