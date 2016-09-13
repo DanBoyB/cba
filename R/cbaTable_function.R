@@ -2,8 +2,7 @@
 #'
 #' This takes standard appraisal parameters plus time savings  and costs estimated elsewhere
 #' to produce a table of discounted costs and benefits over the selected appraisal period.
-#' @param capCosts The capital costs of the proposed scheme
-#' @param costsYear The year in which capital costs are incurred (select single year for simplicity)
+#' @param costTable The capital costs of the proposed scheme output from the cbaTable function
 #' @param appraisalPeriod The number of years over which the scheme should be appraised
 #' @param residualValuePeriod The numnber of years beyond the appraisal period where the scheme benefits can be taken as a residual value
 #' @param openingYear The proposed opening year for the scheme being appraised
@@ -11,7 +10,6 @@
 #' @param timeSavings The estimated time savings (in hours) due to the scheme in the opening year and forecast year
 #' as a list, (i.e. c(x, y)). Can also use output by the timeSavings() function.
 #' @param aveVoT An average value of time assumed for the calculation of scheme benefits
-#' @param votGrowth The assummed annual growth in value of time
 #' @param discountRate The project discount rate used to convert future year prices to the price base year
 #' @param priceBaseYear The year that all appraisal prices are to be represented in
 #' @return A table of the undiscounted and discounted costs and benefits over the appraisal period.

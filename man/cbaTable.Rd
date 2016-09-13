@@ -5,7 +5,7 @@
 \title{Generates a table of costs and Benefits}
 \usage{
 cbaTable(costTable, appraisalPeriod, residualValuePeriod, openingYear,
-  forecastYear, timeSavings, aveVoT, votGrowth, discountRate, priceBaseYear)
+  forecastYear, timeSavings, aveVoT, discountRate, priceBaseYear)
 }
 \arguments{
 \item{appraisalPeriod}{The number of years over which the scheme should be appraised}
@@ -20,8 +20,6 @@ cbaTable(costTable, appraisalPeriod, residualValuePeriod, openingYear,
 as a list, (i.e. c(x, y)). Can also use output by the timeSavings() function.}
 
 \item{aveVoT}{An average value of time assumed for the calculation of scheme benefits}
-
-\item{votGrowth}{The assummed annual growth in value of time}
 
 \item{discountRate}{The project discount rate used to convert future year prices to the price base year}
 
