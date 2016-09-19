@@ -34,7 +34,9 @@ cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYea
                                          ifelse(year >= 2020 & year <= 2024, 1.022,
                                                 ifelse(year >= 2025, 1.023,0)
                                          )))) %>% 
-        mutate(undiscBenefits = (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((votGrowth) ^ (Year - priceBaseYear))) %>%
+        mutate(undiscBenefits = ifelse(Year >= openingYear,
+                                       (benGrowth$estimate[1] + Year*benGrowth$estimate[2]) * ((votGrowth) ^ (Year - priceBaseYear)), 
+                                       0)) %>%
         mutate(discBenefits = undiscBenefits / ((1 + discountRate) ^ (Year - priceBaseYear))) %>% 
         select(-votGrowth)
     
