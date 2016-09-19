@@ -12,8 +12,8 @@
 cbaSummary <- function(table){
     table <- table %>%
         summarise(PVC = sum(discCosts), PVB = sum(discBenefits)) %>%
-        mutate(BCR = PVB/PVC) %>%
-        mutate(NPV = PVB - PVC)
+        mutate(NPV = PVB - PVC) %>% 
+        mutate(BCR = PVB/PVC)
 
     return(table)
 }
