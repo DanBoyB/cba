@@ -20,7 +20,8 @@ cbaTable <- function(costTable, appraisalPeriod, residualValuePeriod, openingYea
                      discountRate, priceBaseYear) {
     
     year <- c(priceBaseYear:((openingYear + appraisalPeriod + residualValuePeriod)-1))
-    modBenefits <- data.frame(Year = c(openingYear, forecastYear), Savings = timeSavings) %>% 
+    modBenefits <- data.frame(Year = c(openingYear, forecastYear),
+                              Savings = as.numeric(as.vector(timeSavings[1,]))) %>% 
         mutate(Savings = (Savings * aveVoT) / 1000000)
     benGrowth <- tidy(lm(Savings ~ Year, data = modBenefits))
     

@@ -18,6 +18,7 @@ timeSavings <- function(dmLength, dsLength, dmSpeedLimit, dsSpeedLimit, openAadt
     openTimeSav <- (dmTime - dsTime) * openAadt * 365
     forecastTimeSav <- (dmTime - dsTime) * forecastAadt * 365
     
-    return(c(openTimeSav, forecastTimeSav))
+    return(data_frame(`Opening Year Time Savings` = openTimeSav,
+                      `Forecast Year Time Savings` = forecastTimeSav))
     
 }
