@@ -4,15 +4,13 @@
 #' for the existing section of road and proposed scheme and
 #' estimates time savings per vehicle
 #' 
-#' @param ex_length 
-#' @param prop_length 
-#' @param ex_speed 
-#' @param proj_speed 
+#' @param ex_length The length (in km) of the existing road section
+#' @param prop_length The length (in km) of the prposed scheme
+#' @param ex_speed Current average speeds on the existing route
+#' @param proj_speed Projected average speeds on upgraded route
 #'
 #' @return A vector of time savings in hours
 #' @export
-#'
-#' @examples
 #' 
 time_saving <- function(ex_length, prop_length, ex_speed, proj_speed) {
     if (missing(ex_length))

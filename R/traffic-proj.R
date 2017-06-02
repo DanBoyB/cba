@@ -4,16 +4,15 @@
 #' the scheme is located and outputs a list of traffic flow
 #' projections based on PAG Unit 5.3 link based projections
 #'
-#' @param base_yr 
-#' @param base_aadt 
-#' @param opening_yr 
-#' @param region 
+#' @param base_yr The year of observed traffic volumes
+#' @param base_aadt Base year observed traffic volumes as AADT
+#' @param opening_yr The proposed year of scheme opening
+#' @param region The region in which the scheme is located as per 
+#' PAG Unit 5.3
 #'
 #' @import readr, dplyr
 #' @return A dataframe of annual traffic flow projections
 #' @export
-#'
-#' @examples
 #' 
 traffic_proj <- function(base_yr, base_aadt, pc_hgv, opening_yr, region) {
     if (missing(base_yr))

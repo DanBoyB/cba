@@ -4,23 +4,24 @@
 #' calculated and traffic projections to calculate scheme
 #' benefits from time savings
 #'
-#' @param opening_yr 
-#' @param appr_period 
-#' @param resid_period 
-#' @param disc_rate 
-#' @param price_base_yr 
-#' @param ave_veh_occ 
-#' @param traffic_proj 
-#' @param time_saving 
+#' @param opening_yr The proposed year of scheme opening
+#' @param appr_period The standard appraisal period in years
+#' @param resid_period The residual value period in years (in
+#' addition to the standard appraisal period)
+#' @param disc_rate The test discount rate as a decimal
+#' @param price_base_yr The price base year assumed for the 
+#' appraisal. Defaults to 2011
+#' @param ave_veh_occ The average vehicle occupancy (persions
+#' per vehicle)
+#' @param traffic_proj A dataframe of annual traffic flow projections
+#' @param time_saving A vector of time savings in hours
 #'
 #' @import readr, dplyr
 #' @return A dataframe of discounted scheme benefits
 #' @export
-#'
-#' @examples
 #' 
-time_benefits <- function(opening_yr, appr_period, resid_period,
-                          disc_rate, price_base_yr, ave_veh_occ,
+time_benefits <- function(opening_yr, appr_period = 30, resid_period = 30,
+                          disc_rate, price_base_yr = 2011, ave_veh_occ = 1.2,
                           traffic_proj, time_saving) {
     if (missing(opening_yr))
         stop("Need to specify opening year")

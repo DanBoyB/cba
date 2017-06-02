@@ -1,7 +1,7 @@
 Package: cba
 Type: Package
 Title: A collection of tools for simple cost benefit analysis of
-        transport schemes
+        simple road realignment schemes
 Version: 0.1.0
 Author: Dan Brennan
 Maintainer: <dan.brennan@tii.ie>
@@ -9,7 +9,7 @@ Description: Simple CBA analysis tools including tables of discounted costs and
     benefits and appraisal summary tables. More tools to be added over time.
 License: MIT
 LazyData: TRUE
-Depends: R (>= 3.2.3), dplyr, broom, tidyr
+Depends: R (>= 3.2.3), readr, dplyr, broom, tidyr
 Suggests: testthat
 RoxygenNote: 5.0.1
 NeedsCompilation: no
