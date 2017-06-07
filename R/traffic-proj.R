@@ -30,7 +30,7 @@ traffic_proj <- function(base_yr, base_aadt, pc_hgv, opening_yr, region) {
     if (missing(region))
         stop("Need to specify region")
     
-    growth <- read_csv("data/pagT532.csv") %>% 
+    growth <- data("pag_t532") %>% 
         filter(growth == "cen", reg == region)
     
     year <- c(base_yr:(base_yr + 75))
