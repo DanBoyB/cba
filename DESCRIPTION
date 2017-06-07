@@ -1,4 +1,4 @@
-Package: cba
+Package: tiicba
 Type: Package
 Title: A collection of tools for simple cost benefit analysis of
         simple road realignment schemes
