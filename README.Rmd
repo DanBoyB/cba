@@ -1,7 +1,14 @@
-cba
-================
-Dan Brennan
-6/7/2017
+---
+title: "cba"
+author: "Dan Brennan"
+date: "6/7/2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(cba)
+```
 
 A set of functions for use in the cost-benefit analysis (cba) of TII simple road realignment schemes. Includes the following functions:
 
