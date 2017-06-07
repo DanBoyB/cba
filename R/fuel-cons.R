@@ -1,83 +1,76 @@
-library(tidyverse)
-# veh_op_costs - fuel cons
-#
-# L = (a + b.v + c.v2 + d.v3) / v
-# Where: 
-#        L = consumption, expressed in litres per kilometre;
-#        v = average speed in kilometres per hour; and
-#        a, b, c, d are parameters defined for each vehicle category
-#
+#' Table of fuel consumption costs
+#'
+#' This function generates a table of fuel consumption costs per km for the 
+#' specified vector of traffic speeds (in kph) for the standard vehicle and
+#' fuel types.
+#' @param speed A vector of traffic speeds. Defaults to between 1 and 150 kph
+#' @param fuel_cons_param Fuel consumption parameters available in package 
+#' @param fuel_split 2011 Fleet vehicle splits by fuel type available in 
+#' package
+#' @param fuel_costs Petrol and diesel fuel costs in cents from 2011 available
+#'  in package
+#' @keywords cba, fuel, consumption
+#' @return A table of scheme costs per year to be input into the cbaTable() function
+#' @export
 
-# function to read dataframe of fuel consumption paramaters and calculate
-# consumption for speeds between 1 and 150kph
-fuel_cons <- function(data) {
-        v <- c(1:150)
-    return (data_frame(speed = v,
-                        cons = (data$a + (data$b * v) + (data$c * (v ^2)) + 
-                                    (data$d * (v ^ 3))) / v))
+fuel_costs_km <- function() {
+    
+    fuel_cons_table <- function(speed = c(1:150), 
+                                fuel_cons_param = data("fuel_cons_param"), 
+                                fuel_split = data("fuel_split"), 
+                                fuel_costs = data("fuel_cost_2011")) {
+        
+        fuel_cons <- function(data) {
+            v <- c(1:150)
+            return (data_frame(speed = v,
+                               cons = (data$a + (data$b * v) + (data$c * (v ^2)) +
+                                           (data$d * (v ^ 3))) / v))
+        }
+        
+        param <- fuel_cons_param %>% 
+            group_by(vehicle) %>% 
+            nest()
+        
+        split <- fuel_split %>% 
+            gather(fuel, prop, 2:3) %>% 
+            rename(veh = vehicle) %>% 
+            mutate(vehicle = paste(fuel, veh, sep = "_")) %>% 
+            select(vehicle, prop)
+        
+        cons <- param %>% 
+            separate(vehicle, into = c("fuel", "veh"), sep = "_") %>% 
+            mutate(cons = map(data, fuel_cons)) %>% 
+            select(-data) %>% 
+            unnest()
+        
+        cost <- fuel_costs
+        
+        cons_veh <- cons %>% 
+            mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
+            filter(veh == v) %>% 
+            left_join(split, by = "vehicle") %>%
+            left_join(cost, by = "fuel") %>%
+            mutate(cost_per_km = (cons * price) / 100) %>% 
+            group_by(speed, veh) %>% 
+            summarise(cons_w_ave = weighted.mean(cons, prop),
+                      cost_per_km = weighted.mean(cost_per_km, prop))
+        
+        return (cons_veh)
+    }
+
+    costs_table <- data_frame(vehicle = speed) %>% 
+        mutate(cons = map(vehicle, fuel_cons_table, 
+                          fuel_cons_param = fuel_cons_param,
+                          fuel_split = fuel_split,
+                          fuel_costs = fuel_costs)) %>% 
+        unnest() %>% 
+        select(-vehicle)
+    
+    return(costs_table)
 }
 
-# read in fuel consumption parameters and nest by vehicle type
-fuel_cons_param <- read_csv("data/webTagA138.csv") %>% 
-    group_by(vehicle) %>% 
-    nest()
 
-ntpm <- read_csv("data/ntpm-veh-totals.csv") %>% 
-    gather(veh, total, 2:6)
 
-veh_prop <- read_csv("data/pag611_t19.csv") %>% 
-    gather(vehicle, prop, 2:6) %>% 
-    mutate(total = ntpm$total) %>% 
-    group_by(vehicle) %>% 
-    summarise(prop = weighted.mean(prop, total)) %>% 
-    mutate(user_class = ifelse(vehicle %in% c("car", "lgv"), "LV", "HV"))
-
-fuel_split <- read_csv("data/fuel-split.csv") %>% 
-    gather(fuel, prop, 2:3) %>% 
-    rename(veh = vehicle) %>% 
-    mutate(vehicle = paste(fuel, veh, sep = "_")) %>% 
-    select(vehicle, prop)
-
-fuel_cost <- read_csv("data/fuel-cost-2011.csv")
-
-# Produce fuel consumption table
-cons <- fuel_cons_param %>% 
-    separate(vehicle, into = c("fuel", "veh"), sep = "_") %>% 
-    mutate(cons = map(data, fuel_cons)) %>% 
-    select(-data) %>% 
-    unnest()
-
-cons_car <- cons %>% 
-    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
-    filter(veh == "car") %>% 
-    left_join(fuel_split, by = "vehicle") %>%
-    mutate(cons_car = cons * prop) %>% 
-    group_by(speed, veh) %>% 
-    summarise(cons_car = sum(cons_car))
-
-cons_lgv <- cons %>% 
-    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
-    filter(veh == "lgv") %>% 
-    left_join(fuel_split, by = "vehicle") %>%
-    mutate(cons_lgv = cons * prop) %>% 
-    group_by(speed, veh) %>% 
-    summarise(cons_lgv = sum(cons_lgv))
-
-cons_hgv <- cons %>% 
-    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
-    filter(veh %in% c("ogv1", "ogv2")) %>% 
-    left_join(fuel_split, by = "vehicle") %>%
-    mutate(cons_hgv = cons * prop) %>% 
-    group_by(speed, veh) %>% 
-    summarise(cons_hgv = sum(cons_hgv))
-
-cons_psv <- cons %>% 
-    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
-    filter(veh == "psv") %>% 
-    left_join(fuel_split, by = "vehicle") %>%
-    mutate(cons_psv = cons * prop) %>% 
-    group_by(speed, veh) %>% 
-    summarise(cons_psv = sum(cons_psv))
 
 
 
