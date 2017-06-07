@@ -16,9 +16,9 @@
 fuel_costs_km <- function() {
     
     fuel_cons_table <- function(speed = c(1:150), 
-                                fuel_cons_param = data("fuel_cons_param"), 
-                                fuel_split = data("fuel_split"), 
-                                fuel_costs = data("fuel_cost_2011")) {
+                                fuel_cons_param = fuel_cons_param, 
+                                fuel_split = fuel_split, 
+                                fuel_costs = fuel_cost_2011) {
         
         fuel_cons <- function(data) {
             v <- c(1:150)

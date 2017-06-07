@@ -9,8 +9,9 @@ Description: Simple CBA analysis tools including tables of discounted costs and
     benefits and appraisal summary tables. More tools to be added over time.
 License: MIT
 LazyData: TRUE
-Depends: R (>= 3.2.3), readr, dplyr, broom, tidyr
+Depends: R (>= 3.3.3)
+Imports: tidyverse
 Suggests: testthat
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 NeedsCompilation: no
 Packaged: 2016-08-11 20:48:57 UTC; dan
