@@ -1,3 +1,7 @@
-fuel,Car,LGV,HGV
-Petrol,0.70,0.15,0.15
-Diesel,0.30,0.85,0.85
+vehicle,petrol,diesel
+car,0.7,0.3
+lgv,0.15,0.85
+ogv1,0.0,1.0
+ogv2,0.0,1.0
+psv,0.0,1.0
+

@@ -8,29 +8,79 @@ library(tidyverse)
 #        a, b, c, d are parameters defined for each vehicle category
 #
 
-fuel_cons <- function(a, b, c, d, v) {
-    fuelCons = (a + (b * v) + (c * (v ^2)) + (d * (v ^ 3))) / v
+# function to read dataframe of fuel consumption paramaters and calculate
+# consumption for speeds between 1 and 150kph
+fuel_cons <- function(data) {
+        v <- c(1:150)
+    return (data_frame(speed = v,
+                        cons = (data$a + (data$b * v) + (data$c * (v ^2)) + 
+                                    (data$d * (v ^ 3))) / v))
 }
 
-webTagA138 <- read_csv("data/webTagA138.csv")
-fuel_split <- read_csv("data/fuel-split.csv")
+# read in fuel consumption parameters and nest by vehicle type
+fuel_cons_param <- read_csv("data/webTagA138.csv") %>% 
+    group_by(vehicle) %>% 
+    nest()
 
-speed <- c(6:150)
+ntpm <- read_csv("data/ntpm-veh-totals.csv") %>% 
+    gather(veh, total, 2:6)
 
-# check the purrr:map function warnings as calcs do not match the below approach in 'test'
-cons1 <- webTagA138 %>% 
-    mutate(cons = map(a, fuel_cons, b = b, c = c, d = d, v = speed)) %>% 
-    unnest() %>% 
-    mutate(speed = rep(speed, 7)) %>% 
-    select(speed, vehicle, cons)
+veh_prop <- read_csv("data/pag611_t19.csv") %>% 
+    gather(vehicle, prop, 2:6) %>% 
+    mutate(total = ntpm$total) %>% 
+    group_by(vehicle) %>% 
+    summarise(prop = weighted.mean(prop, total)) %>% 
+    mutate(user_class = ifelse(vehicle %in% c("car", "lgv"), "LV", "HV"))
 
-test <- data_frame(speed) %>% 
-    mutate(`Petrol Car` = (fuel_cons(webTagA138$a[1], webTagA138$b[1], webTagA138$c[1], webTagA138$d[1], speed))) %>% 
-    mutate(`Diesel Car` = (fuel_cons(webTagA138$a[2], webTagA138$b[2], webTagA138$c[2], webTagA138$d[2], speed))) %>%
-    mutate(`Petrol LGV` = (fuel_cons(webTagA138$a[3], webTagA138$b[3], webTagA138$c[3], webTagA138$d[3], speed))) %>%
-    mutate(`Diesel LGV` = (fuel_cons(webTagA138$a[4], webTagA138$b[4], webTagA138$c[4], webTagA138$d[4], speed))) %>%
-    mutate(`OGV1` = (fuel_cons(webTagA138$a[5], webTagA138$b[5], webTagA138$c[5], webTagA138$d[5], speed))) %>%
-    mutate(`OGV2` = (fuel_cons(webTagA138$a[6], webTagA138$b[6], webTagA138$c[6], webTagA138$d[6], speed))) %>%
-    mutate(`PSV` = (fuel_cons(webTagA138$a[7], webTagA138$b[7], webTagA138$c[7], webTagA138$d[7], speed))) %>% 
-    select(-OGV2)
+fuel_split <- read_csv("data/fuel-split.csv") %>% 
+    gather(fuel, prop, 2:3) %>% 
+    rename(veh = vehicle) %>% 
+    mutate(vehicle = paste(fuel, veh, sep = "_")) %>% 
+    select(vehicle, prop)
+
+fuel_cost <- read_csv("data/fuel-cost-2011.csv")
+
+# Produce fuel consumption table
+cons <- fuel_cons_param %>% 
+    separate(vehicle, into = c("fuel", "veh"), sep = "_") %>% 
+    mutate(cons = map(data, fuel_cons)) %>% 
+    select(-data) %>% 
+    unnest()
+
+cons_car <- cons %>% 
+    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
+    filter(veh == "car") %>% 
+    left_join(fuel_split, by = "vehicle") %>%
+    mutate(cons_car = cons * prop) %>% 
+    group_by(speed, veh) %>% 
+    summarise(cons_car = sum(cons_car))
+
+cons_lgv <- cons %>% 
+    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
+    filter(veh == "lgv") %>% 
+    left_join(fuel_split, by = "vehicle") %>%
+    mutate(cons_lgv = cons * prop) %>% 
+    group_by(speed, veh) %>% 
+    summarise(cons_lgv = sum(cons_lgv))
+
+cons_hgv <- cons %>% 
+    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
+    filter(veh %in% c("ogv1", "ogv2")) %>% 
+    left_join(fuel_split, by = "vehicle") %>%
+    mutate(cons_hgv = cons * prop) %>% 
+    group_by(speed, veh) %>% 
+    summarise(cons_hgv = sum(cons_hgv))
+
+cons_psv <- cons %>% 
+    mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
+    filter(veh == "psv") %>% 
+    left_join(fuel_split, by = "vehicle") %>%
+    mutate(cons_psv = cons * prop) %>% 
+    group_by(speed, veh) %>% 
+    summarise(cons_psv = sum(cons_psv))
+
+
+
+    
+
 
