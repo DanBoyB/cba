@@ -7,7 +7,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(cba)
+library(tiicba)
 ```
 
 A set of functions for use in the cost-benefit analysis (cba) of TII simple road realignment schemes. Includes the following functions:
