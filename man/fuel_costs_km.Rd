@@ -4,7 +4,7 @@
 \alias{fuel_costs_km}
 \title{Table of fuel consumption costs}
 \usage{
-fuel_costs_km()
+fuel_costs_km(speed, fuel_cons_param, fuel_split, fuel_cost_2011)
 }
 \arguments{
 \item{speed}{A vector of traffic speeds. Defaults to between 1 and 150 kph}
@@ -18,7 +18,8 @@ package}
 in package}
 }
 \value{
-A table of scheme costs per year to be input into the cbaTable() function
+A table of scheme costs per year to be input into the cbaTable() 
+function
 }
 \description{
 This function generates a table of fuel consumption costs per km for the 
