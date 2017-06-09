@@ -1,0 +1,13 @@
+vehicle,purpose,fuel,a1,b1
+car,work,petrol,6.265,171.493
+car,work,diesel,6.265,171.493
+car,work,electric,1.46,171.493
+car,non-work,petrol,5.507,0
+car,non-work,diesel,5.507,0
+car,non-work,electric,1.657,0
+lgv,work,diesel,9.099,70.308
+lgv,non-work,diesel,10.327,0
+lgv,average,diesel,9.099,52.298
+ogv1,work,diesel,10.02,393.702
+ogv2,work,diesel,19.491,758.888
+psv,work,diesel,45.458,1036.494
