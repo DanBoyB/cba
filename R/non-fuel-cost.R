@@ -10,6 +10,7 @@
 #' @keywords cba, fuel, consumption
 #' @return A table of non-fuel costs per km for the specified vector of speeds
 #' 
+#' @import dplyr
 #' @export
 #' 
 
@@ -22,10 +23,10 @@ nonfuel_cost_km <- function(speed, non_fuel_param) {
     
     cost_table <- non_fuel_param %>% 
         group_by(vehicle, purpose, fuel) %>% 
-        nest() %>% 
-        mutate(cons = map(data, nonfuel_cost)) %>% 
+        tidyr::nest() %>% 
+        mutate(cons = purrr::map(data, nonfuel_cost)) %>% 
         select(-data) %>% 
-        unnest()
+        tidyr::unnest()
     
     return(cost_table)
     

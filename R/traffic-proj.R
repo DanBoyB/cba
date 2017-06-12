@@ -10,6 +10,7 @@
 #' @param region The region in which the scheme is located as per 
 #' PAG Unit 5.3
 #'
+#' @importFrom magrittr %>% 
 #' @return A dataframe of annual traffic flow projections
 #' @export
 #' 
@@ -47,7 +48,7 @@ traffic_proj <- function(base_yr, base_aadt, pc_hgv, opening_yr, region) {
     hv <-  c(hv_1330, hv_3050[-1], hv_50_)
     
     traffic <- data_frame(year = year, lv = lv, hv = hv) %>% 
-        mutate(total = lv + hv)
+        dplyr::mutate(total = lv + hv)
     
     traffic
 }

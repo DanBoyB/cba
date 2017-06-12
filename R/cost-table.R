@@ -14,6 +14,7 @@
 #' @param cost_yrs The range of years over which the costs are assumed to be incurred
 #' @param cost_prop a vector list of the proportion of scheme costs for each year definec in the costYears argument.
 #' @keywords cba, costs
+#' @import dplyr
 #' @return A table of scheme costs per year to be input into the cbaTable() function
 #' @export
 

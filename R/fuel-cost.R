@@ -10,6 +10,7 @@
 #' @param fuel_costs Petrol and diesel fuel costs in cents from 2011 available
 #'  in package
 #' @keywords cba, fuel, consumption
+#' @import dplyr
 #' @return A table of fuel consumption costs per km for the specified vector of
 #' speeds
 #' @export
@@ -35,14 +36,14 @@ fuel_costs_km <- function(speed,
         
         cons <- fuel_cons_param %>% 
             group_by(vehicle) %>% 
-            nest() %>% 
-            separate(vehicle, into = c("fuel", "veh"), sep = "_")  %>% 
-            mutate(cons = map(data, fuel_cons)) %>% 
+            tidyr::nest() %>% 
+            tidyr::separate(vehicle, into = c("fuel", "veh"), sep = "_")  %>% 
+            mutate(cons = purrr::map(data, fuel_cons)) %>% 
             select(-data) %>% 
-            unnest()
+            tidyr::unnest()
         
         split <- fuel_split %>% 
-            gather(fuel, prop, 2:3) %>% 
+            tidyr::gather(fuel, prop, 2:3) %>% 
             rename(veh = vehicle) %>% 
             mutate(vehicle = paste(fuel, veh, sep = "_")) %>% 
             select(vehicle, prop)
@@ -62,11 +63,11 @@ fuel_costs_km <- function(speed,
     }
 
     costs_table <- data_frame(v = speed) %>% 
-        mutate(cons = map(v, fuel_cons_table, 
+        mutate(cons = purrr::map(v, fuel_cons_table, 
                           fuel_cons_param = fuel_cons_param,
                           fuel_split = fuel_split,
                           fuel_cost_2011 = fuel_cost_2011)) %>% 
-        unnest() %>% 
+        tidyr::unnest() %>% 
         select(-v)
     
     return(costs_table)

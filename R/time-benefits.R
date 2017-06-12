@@ -16,6 +16,7 @@
 #' @param traffic_proj A dataframe of annual traffic flow projections
 #' @param time_saving A vector of time savings in hours
 #'
+#' @import dplyr
 #' @return A dataframe of discounted scheme benefits
 #' @export
 #' 
