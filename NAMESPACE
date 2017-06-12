@@ -2,6 +2,7 @@
 
 export(cost_table)
 export(fuel_costs_km)
+export(nonfuel_cost_km)
 export(time_benefits)
 export(time_saving)
 export(traffic_proj)
