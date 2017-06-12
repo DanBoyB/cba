@@ -10,8 +10,8 @@
 #' @param fuel_costs Petrol and diesel fuel costs in cents from 2011 available
 #'  in package
 #' @keywords cba, fuel, consumption
-#' @return A table of scheme costs per year to be input into the cbaTable() 
-#' function
+#' @return A table of fuel consumption costs per km for the specified vector of
+#' speeds
 #' @export
 
 fuel_costs_km <- function(speed, 

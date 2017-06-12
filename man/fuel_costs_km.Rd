@@ -18,8 +18,8 @@ package}
 in package}
 }
 \value{
-A table of scheme costs per year to be input into the cbaTable() 
-function
+A table of fuel consumption costs per km for the specified vector of
+speeds
 }
 \description{
 This function generates a table of fuel consumption costs per km for the 
