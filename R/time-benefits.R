@@ -50,7 +50,7 @@ time_benefits <- function(opening_yr, appr_period = 30, resid_period = 30,
         filter(year %in% c(opening_yr:(opening_yr + appr_period + resid_period - 1))) %>% 
         left_join(vot, by = "year") %>% 
         mutate(saving = time_saving, 
-               undisc_ben = vot * ts * total * ave_veh_occ, 
+               undisc_ben = vot * savinga * total * ave_veh_occ, 
                disc_ben = undisc_ben / ((1 + disc_rate) ^ (year - price_base_yr))) %>% 
         select(year, disc_ben)
     
