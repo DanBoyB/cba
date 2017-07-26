@@ -44,7 +44,7 @@ time_benefits <- function(opening_yr, appr_period = 30, resid_period = 30,
     if (missing(time_saving))
         stop("Need to specify scheme time savings per vehicle")
     
-    vot <- read_csv("data/w-ave-vot.csv")                          
+    vot <- w_ave_vot                          
     
     benefits <- traffic_proj %>%
         filter(year %in% c(opening_yr:(opening_yr + appr_period + resid_period - 1))) %>% 

@@ -18,7 +18,7 @@ nonfuel_cost_km <- function(speed, non_fuel_param) {
     nonfuel_cost <- function(data) {
         v <- speed
         return (data_frame(speed = v,
-                           cons = (data$a1 + (data$b1 / v))))
+                           cost_per_km = (data$a1 + (data$b1 / v))))
     }
     
     cost_table <- non_fuel_param %>% 
