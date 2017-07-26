@@ -63,3 +63,16 @@ ave_vot_all <- ave_vot_class %>%
     left_join(class_props, by = "class") %>% 
     group_by(flow_group) %>% 
     summarise(w_ave_vot = weighted.mean(class_vot, class_prop))
+
+# Average VOT for weekday traffic (note should replace this with weighted ave)
+ave_vot <- ave_vot_all %>% 
+    filter(flow_group <= 4) %>% 
+    summarise_at("w_ave_vot", mean) %>% 
+    as.numeric()
+
+# VOT by year
+annual_vot <- caf_vot_growth %>% 
+    mutate(ave_vot = vot_growth * ave_vot) %>% 
+    select(-vot_growth)
+
+write_csv(annual_vot, "data-raw/w-ave-vot.csv")
