@@ -1,0 +1,16 @@
+road_type,vehicle,prop
+m_way,car,0.8297
+nat_pri,car,0.8565
+nat_sec,car,0.8567
+m_way,lgv,0.0881
+nat_pri,lgv,0.0828
+nat_sec,lgv,0.0846
+m_way,ogv1,0.0299
+nat_pri,ogv1,0.025
+nat_sec,ogv1,0.0316
+m_way,ogv2,0.0477
+nat_pri,ogv2,0.0297
+nat_sec,ogv2,0.0234
+m_way,psv,0.0065
+nat_pri,psv,0.0059
+nat_sec,psv,0.0036
