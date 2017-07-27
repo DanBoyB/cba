@@ -25,6 +25,17 @@ fuel_costs_km <- function(speed,
                                 fuel_split, 
                                 fuel_cost_2011) {
         
+        if (missing(speed))
+            stop("Need to specify a vector of traffic speeds")
+        
+        if (missing(fuel_cons_param))
+            stop("Need to specify fuel consumption parameters")
+        
+        if (missing(fuel_split))
+            stop("Need to specify fleet splits by fuel type")
+        
+        if (missing(fuel_cost_2011))
+            stop("Need to specify test base fuel costs")
         
         fuel_cons <- function(data) {
             v <- speed

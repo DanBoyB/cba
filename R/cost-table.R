@@ -24,6 +24,39 @@ cost_table <- function(cost_est, price_base_yr = 2011, opening_yr, appr_period =
                        spl = 1.0, cost_yrs = c(2022:2025), 
                        cost_prop = c(0.116, 0.437, 0.409, 0.038)) {
     
+    if (missing(cost_est))
+        stop("Need to specify the scheme cost estimates (in millions, factor prices)")
+    
+    if (missing(price_base_yr))
+        stop("Need to specify the price base year")
+    
+    if (missing(opening_yr))
+        stop("Need to specify the scheme opening year")
+    
+    if (missing(appr_period))
+        stop("Need to specify the appraisal period in years")
+    
+    if (missing(resid_period))
+        stop("Need to specify the residual value period in years")
+    
+    if (missing(cpi_base))
+        stop("Need to specify the consumer price index (CPI) in the base year")
+    
+    if (missing(cpi_cost_est))
+        stop("Need to specify the consumer price index (CPI) in the year of the cost estimate")
+    
+    if (missing(sppf))
+        stop("Need to specify the shadow price of public funds")
+    
+    if (missing(spl))
+        stop("Need to specify the shadow price of labour")
+    
+    if (missing(cost_yrs))
+        stop("Need to specify the years over which costs will be incurred")
+    
+    if (missing(cost_prop))
+        stop("Need to specify test proportion of costs spent by year")
+    
     cost_est_adj <- cost_est * (cpi_base / cpi_cost_est) * sppf * spl
     
     cost_prop <- data_frame(year = cost_yrs, prop = cost_prop)
