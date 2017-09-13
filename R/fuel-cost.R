@@ -7,7 +7,7 @@
 #' @param fuel_cons_param Fuel consumption parameters available in package 
 #' @param fuel_split 2011 Fleet vehicle splits by fuel type available in 
 #' package
-#' @param fuel_costs Petrol and diesel fuel costs in cents from 2011 available
+#' @param fuel_cost_2011 Petrol and diesel fuel costs in cents from 2011 available
 #'  in package
 #' @keywords cba, fuel, consumption
 #' @import dplyr
@@ -15,7 +15,7 @@
 #' speeds
 #' @export
 
-fuel_costs_km <- function(speed, 
+fuel_cost_km <- function(speed, 
                           fuel_cons_param, 
                           fuel_split, 
                           fuel_cost_2011) {
