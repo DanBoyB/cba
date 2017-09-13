@@ -20,4 +20,89 @@ A set of functions for use in the cost-benefit analysis (cba) of TII simple road
 
 `time_benefits`: A function to read in appraisal paramaters, time savings calculated and traffic projections to calculate scheme benefits from time savings.
 
-More to be added over time. The intention is to ultimately replace the PAG Unit 12 Simple Appraisal Tool with a web based app (via Shiny).
+`fuel_cons`: generates a table of fuel consumption costs per km for traffic speeds between 1 and 150 kph for the standard vehicle and fuel types.
+
+`nonfuel_cost_km`: generates a table of non-fuel consumption costs per km for traffic speeds between 1 and 150 kph for the standard vehicle types.
+
+`veh_op_costs`: reads in appraisal paramaters, fuel and non-fuel costs calculated and traffic projections to calculate scheme vehicle operating costs.
+
+*More to be added over time. The intention is to ultimately replace the PAG Unit 12 Simple Appraisal Tool with a web based app (via Shiny).*
+
+## Example
+
+Undertake a simple cost-benefit analysis of an road upgrade project in Meath. The project consists of the upgrade of a 8km section of an existing single carriageway, consisting of a new 10km alginment of Type 1 dual carriageway. An observed AADT of 8,000 and a 5% HGV content on the road was measured in 2016, with average speeds measured as 70 kph. The scheme opening year is assumed to be 2019 and the design speed of the realigned section is 100 kph.
+
+The scheme is estimated to cost €20 million in 2016 prices.
+
+First, we load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
+
+```{r}
+library(tiicba)
+
+proj <- traffic_proj(base_yr = 2016,
+                     base_aadt = 8000,
+                     opening_yr = 2019,
+                     pc_hgv = 0.05,
+                     region = "Mid-East")
+
+proj
+```
+
+Next, we calculate outline time savings using the `time_savings` function.
+```{r}
+savings <- time_saving(ex_length = 8,
+                       prop_length = 10,
+                       ex_speed = 70,
+                       proj_speed = 100)
+
+savings * 60 * 60
+```
+
+We can now estimate the scheme time benefits using the `time_benefits` function.
+```{r}
+time_ben <- time_benefits(opening_yr = 2019,
+                          appr_period = 30,
+                          resid_period = 0,
+                          disc_rate = 0.05,
+                          price_base_yr = 2011,
+                          ave_veh_occ = 1.2,
+                          traffic_proj = proj,
+                          time_saving = savings)
+
+time_ben %>% 
+    summarise(benefits = sum(disc_ben))
+```
+
+Fuel and non-fuel operating costs can be estimated using the `fuel_cost_km` and `nonfuel_cost_km` functions.
+```{r}
+fuel <- fuel_cost_km(speed = c(1:150),
+                      fuel_cons_param = fuel_cons_param,
+                      fuel_split = fuel_split,
+                      fuel_cost_2011 = fuel_cost_2011)
+
+fuel
+```
+
+```{r}
+non_fuel <- nonfuel_cost_km(speed = c(1:150),
+                            non_fuel_param = non_fuel_param)
+
+non_fuel
+```
+
+The output of the `fuel_cost_km` and `nonfuel_cost_km` can then be used to calculate overall vehicle operating costs using the `veh_op_costs` function.
+```{r}
+veh_op <- veh_op_costs(opening_yr = 2019,
+                       appr_period = 30,
+                       resid_period = 0,
+                       disc_rate = 0.05,
+                       price_base_yr = 2011,
+                       ave_veh_occ = 1.2,
+                       traffic_proj = proj,
+                       speed_ex = 70,
+                       speed_prop = 100,
+                       fuel_costs = fuel,
+                       non_fuel_costs = non_fuel)
+
+veh_op
+```
