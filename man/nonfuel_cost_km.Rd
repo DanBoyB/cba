@@ -4,12 +4,14 @@
 \alias{nonfuel_cost_km}
 \title{Table of non-fuel costs}
 \usage{
-nonfuel_cost_km(speed, non_fuel_param)
+nonfuel_cost_km(speed, non_fuel_param, road_type)
 }
 \arguments{
 \item{speed}{A vector of traffic speeds.}
 
 \item{non_fuel_param}{Non-fuel consumption parameters available in package}
+
+\item{road_type}{road type as character vector, i.e. "m_way", "nat_pr", "nat_sec"}
 }
 \value{
 A table of non-fuel costs per km for the specified vector of speeds

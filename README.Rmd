@@ -38,6 +38,7 @@ First, we load the `tiicba` package and use the `traffic_proj`function to create
 
 ```{r}
 library(tiicba)
+library(tidyverse)
 
 proj <- traffic_proj(base_yr = 2016,
                      base_aadt = 8000,
@@ -73,19 +74,22 @@ time_ben %>%
     summarise(benefits = sum(disc_ben))
 ```
 
-Fuel and non-fuel operating costs can be estimated using the `fuel_cost_km` and `nonfuel_cost_km` functions.
+Fuel and non-fuel operating costs for a vector of traffic speeds (eg. 1 - 150 kph) can be estimated using the `fuel_cost_km` and `nonfuel_cost_km` functions.
 ```{r}
 fuel <- fuel_cost_km(speed = c(1:150),
-                      fuel_cons_param = fuel_cons_param,
-                      fuel_split = fuel_split,
-                      fuel_cost_2011 = fuel_cost_2011)
+                     fuel_cons_param = fuel_cons_param,
+                     fuel_split = fuel_split,
+                     fuel_cost_2011 = fuel_cost_2011,
+                     road_type = "nat_pri"
+                     )
 
 fuel
 ```
 
 ```{r}
 non_fuel <- nonfuel_cost_km(speed = c(1:150),
-                            non_fuel_param = non_fuel_param)
+                            non_fuel_param = non_fuel_param,
+                            road_type = "nat_pri")
 
 non_fuel
 ```
@@ -104,5 +108,6 @@ veh_op <- veh_op_costs(opening_yr = 2019,
                        fuel_costs = fuel,
                        non_fuel_costs = non_fuel)
 
-veh_op
+veh_op %>% 
+    summarise(benefits = sum(disc_costs))
 ```

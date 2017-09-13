@@ -59,18 +59,34 @@ veh_op_costs <- function(opening_yr, appr_period = 30, resid_period = 30,
     if (missing(non_fuel_costs))
         stop("Need to specify table of non-fuel costs")
     
-    fuel <- fuel_costs
-    non_fuel <- non_fuel_costs
+    fuel_cost_ex <- fuel_costs %>% 
+        filter(speed == speed_ex) %>% 
+        select(cost_per_km) %>% 
+        as.numeric
     
-    costs <- traffic_proj %>%
+    fuel_cost_prop <- fuel_costs %>% 
+        filter(speed == speed_prop) %>% 
+        select(cost_per_km) %>% 
+        as.numeric
+    
+    nonfuel_cost_ex <- non_fuel_costs %>% 
+        filter(speed == speed_ex) %>% 
+        select(cost_per_km) %>% 
+        as.numeric
+    
+    nonfuel_cost_prop <- non_fuel_costs %>% 
+        filter(speed == speed_prop) %>% 
+        select(cost_per_km) %>% 
+        as.numeric
+    
+    costs <- proj %>%
         filter(year %in% c(opening_yr:(opening_yr + appr_period + resid_period - 1))) %>% 
-        left_join(vot, by = "year") %>% 
-        mutate(saving = time_saving, 
-               undisc_ben = vot * saving * total * ave_veh_occ, 
-               disc_ben = undisc_ben / ((1 + disc_rate) ^ (year - price_base_yr))) %>% 
-        select(year, disc_ben)
+        mutate(undisc_costs = (fuel_cost_prop - fuel_cost_ex) + 
+                   (nonfuel_cost_prop - nonfuel_cost_ex), 
+               disc_costs = undisc_costs / ((1 + disc_rate) ^ (year - price_base_yr))) %>% 
+        select(year, disc_costs)
     
-    benefits
+    return(costs)
 }
 
 

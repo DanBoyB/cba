@@ -4,7 +4,7 @@
 \alias{fuel_cost_km}
 \title{Table of fuel consumption costs}
 \usage{
-fuel_cost_km(speed, fuel_cons_param, fuel_split, fuel_cost_2011)
+fuel_cost_km(speed, fuel_cons_param, fuel_split, fuel_cost_2011, road_type)
 }
 \arguments{
 \item{speed}{A vector of traffic speeds.}
@@ -16,6 +16,8 @@ package}
 
 \item{fuel_cost_2011}{Petrol and diesel fuel costs in cents from 2011 available
 in package}
+
+\item{road_type}{road type as character vector, i.e. "m_way", "nat_pr", "nat_sec"}
 }
 \value{
 A table of fuel consumption costs per km for the specified vector of

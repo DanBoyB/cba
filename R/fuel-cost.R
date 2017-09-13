@@ -9,6 +9,7 @@
 #' package
 #' @param fuel_cost_2011 Petrol and diesel fuel costs in cents from 2011 available
 #'  in package
+#' @param road_type road type as character vector, i.e. "m_way", "nat_pr", "nat_sec"
 #' @keywords cba, fuel, consumption
 #' @import dplyr
 #' @return A table of fuel consumption costs per km for the specified vector of
@@ -16,9 +17,10 @@
 #' @export
 
 fuel_cost_km <- function(speed, 
-                          fuel_cons_param, 
-                          fuel_split, 
-                          fuel_cost_2011) {
+                         fuel_cons_param, 
+                         fuel_split, 
+                         fuel_cost_2011,
+                         road_type) {
     
     fuel_cons_table <- function(speed, 
                                 fuel_cons_param, 
@@ -75,11 +77,20 @@ fuel_cost_km <- function(speed,
 
     costs_table <- data_frame(v = speed) %>% 
         mutate(cons = purrr::map(v, fuel_cons_table, 
-                          fuel_cons_param = fuel_cons_param,
-                          fuel_split = fuel_split,
-                          fuel_cost_2011 = fuel_cost_2011)) %>% 
+                                 fuel_cons_param = fuel_cons_param,
+                                 fuel_split = fuel_split,
+                                 fuel_cost_2011 = fuel_cost_2011)) %>% 
         tidyr::unnest() %>% 
         select(-v)
+    
+    veh_prop <- pag_611_T19 %>% 
+        filter(road_type == road_type) %>% 
+        rename(veh = vehicle)
+    
+    costs_table <- costs_table %>% 
+        left_join(veh_prop, by = "veh") %>% 
+        group_by(speed) %>% 
+        summarise(cost_per_km = weighted.mean(cost_per_km, prop))
     
     return(costs_table)
 }
