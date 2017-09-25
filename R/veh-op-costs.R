@@ -79,10 +79,10 @@ veh_op_costs <- function(opening_yr, appr_period = 30, resid_period = 30,
         select(cost_per_km) %>% 
         as.numeric
     
-    costs <- proj %>%
+    costs <- traffic_proj %>%
         filter(year %in% c(opening_yr:(opening_yr + appr_period + resid_period - 1))) %>% 
-        mutate(undisc_costs = (fuel_cost_prop - fuel_cost_ex) + 
-                   (nonfuel_cost_prop - nonfuel_cost_ex), 
+        mutate(undisc_costs = ((fuel_cost_prop - fuel_cost_ex) + 
+                   (nonfuel_cost_prop - nonfuel_cost_ex)) * total * ave_veh_occ, 
                disc_costs = undisc_costs / ((1 + disc_rate) ^ (year - price_base_yr))) %>% 
         select(year, disc_costs)
     

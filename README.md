@@ -179,7 +179,7 @@ veh_op %>%
     ## # A tibble: 1 x 1
     ##    benefits
     ##       <dbl>
-    ## 1 -4.161028
+    ## 1 -17343175
 
 On the costs side, a table of scheme costs can be generated using the `costs_table` function.
 
@@ -224,6 +224,6 @@ costs_ben_table %>%
 ```
 
     ## # A tibble: 1 x 4
-    ##        pvb      pvc     npv      bcr
-    ##      <dbl>    <dbl>   <dbl>    <dbl>
-    ## 1 26427974 20368302 6059672 1.297505
+    ##       pvb      pvc       npv       bcr
+    ##     <dbl>    <dbl>     <dbl>     <dbl>
+    ## 1 9084803 20368302 -11283499 0.4460265
