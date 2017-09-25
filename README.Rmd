@@ -34,7 +34,7 @@ Undertake a simple cost-benefit analysis of an road upgrade project in Meath. Th
 
 The scheme is estimated to cost €20 million in 2016 prices.
 
-First, we load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
+First, load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
 
 ```{r}
 library(tiicba)
@@ -49,7 +49,7 @@ proj <- traffic_proj(base_yr = 2016,
 proj
 ```
 
-Next, we calculate outline time savings using the `time_savings` function.
+Next, calculate outline time savings using the `time_savings` function.
 ```{r}
 savings <- time_saving(ex_length = 8,
                        prop_length = 10,
@@ -59,7 +59,7 @@ savings <- time_saving(ex_length = 8,
 savings * 60 * 60
 ```
 
-We can now estimate the scheme time benefits using the `time_benefits` function.
+The scheme time benefits can now be estimated using the `time_benefits` function.
 ```{r}
 time_ben <- time_benefits(opening_yr = 2019,
                           appr_period = 30,
@@ -111,3 +111,39 @@ veh_op <- veh_op_costs(opening_yr = 2019,
 veh_op %>% 
     summarise(benefits = sum(disc_costs))
 ```
+
+On the costs side, a table of scheme costs can be generated using the `costs_table` function.
+```{r}
+costs <- cost_table(cost_est = 20000000,
+                    price_base_yr = 2011,
+                    opening_yr = 2019,
+                    appr_period = 30,
+                    resid_period = 0,
+                    cpi_base = 103.8,
+                    cpi_cost_est = 106.0,
+                    sppf = 1.3,
+                    spl = 0.8,
+                    cost_yrs = c(2017:2019),
+                    cost_prop = c(0.25, 0.5, 0.25))
+
+costs
+```
+
+Produce table of costs and benefits and calculate NPV and BCR.
+
+```{r}
+costs_ben_table <- data_frame(year = costs$year[1]:time_ben$year[nrow(time_ben)]) %>% 
+    left_join(costs, by = "year") %>% 
+    left_join(time_ben, by = "year") %>% 
+    left_join(veh_op, by = "year") %>% 
+    rename(pvc = costs, time_ben = disc_ben, veh_op_costs = disc_costs) %>% 
+    mutate(pvb = time_ben + veh_op_costs)
+
+costs_ben_table %>%
+    summarise(pvb = sum(pvb, na.rm = TRUE),
+              pvc = sum(pvc, na.rm = TRUE),
+              npv = pvb - pvc,
+              bcr = pvb / pvc)
+    
+```
+
