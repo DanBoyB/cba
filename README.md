@@ -26,11 +26,28 @@ Example
 
 Undertake a simple cost-benefit analysis of an road upgrade project in Meath. The project consists of the upgrade of a 8km section of an existing single carriageway, consisting of a new 10km alginment of Type 1 dual carriageway. An observed AADT of 8,000 and a 5% HGV content on the road was measured in 2016, with average speeds measured as 70 kph. The scheme opening year is assumed to be 2019 and the design speed of the realigned section is 100 kph.
 
-First, we load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
+The scheme is estimated to cost €20 million in 2016 prices.
+
+First, load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
 
 ``` r
 library(tiicba)
+library(tidyverse)
+```
 
+    ## Loading tidyverse: ggplot2
+    ## Loading tidyverse: tibble
+    ## Loading tidyverse: tidyr
+    ## Loading tidyverse: readr
+    ## Loading tidyverse: purrr
+    ## Loading tidyverse: dplyr
+
+    ## Conflicts with tidy packages ----------------------------------------------
+
+    ## filter(): dplyr, stats
+    ## lag():    dplyr, stats
+
+``` r
 proj <- traffic_proj(base_yr = 2016,
                      base_aadt = 8000,
                      opening_yr = 2019,
@@ -55,7 +72,7 @@ proj
     ## 10  2025 3143750 180263.2 3324014
     ## # ... with 66 more rows
 
-Next, we calculate outline time savings using the `time_savings` function.
+Next, calculate outline time savings using the `time_savings` function.
 
 ``` r
 savings <- time_saving(ex_length = 8,
@@ -67,3 +84,146 @@ savings * 60 * 60
 ```
 
     ## [1] 51.42857
+
+The scheme time benefits can now be estimated using the `time_benefits` function.
+
+``` r
+time_ben <- time_benefits(opening_yr = 2019,
+                          appr_period = 30,
+                          resid_period = 0,
+                          disc_rate = 0.05,
+                          price_base_yr = 2011,
+                          ave_veh_occ = 1.2,
+                          traffic_proj = proj,
+                          time_saving = savings)
+
+time_ben %>% 
+    summarise(benefits = sum(disc_ben))
+```
+
+    ## # A tibble: 1 x 1
+    ##   benefits
+    ##      <dbl>
+    ## 1 26427978
+
+Fuel and non-fuel operating costs for a vector of traffic speeds (eg. 1 - 150 kph) can be estimated using the `fuel_cost_km` and `nonfuel_cost_km` functions.
+
+``` r
+fuel <- fuel_cost_km(speed = c(1:150),
+                     fuel_cons_param = fuel_cons_param,
+                     fuel_split = fuel_split,
+                     fuel_cost_2011 = fuel_cost_2011,
+                     road_type = "nat_pri"
+                     )
+
+fuel
+```
+
+    ## # A tibble: 150 x 2
+    ##    speed cost_per_km
+    ##    <int>       <dbl>
+    ##  1     1   0.7543899
+    ##  2     2   0.4009198
+    ##  3     3   0.2828310
+    ##  4     4   0.2235940
+    ##  5     5   0.1879031
+    ##  6     6   0.1639894
+    ##  7     7   0.1468095
+    ##  8     8   0.1338413
+    ##  9     9   0.1236839
+    ## 10    10   0.1154967
+    ## # ... with 140 more rows
+
+``` r
+non_fuel <- nonfuel_cost_km(speed = c(1:150),
+                            non_fuel_param = non_fuel_param,
+                            road_type = "nat_pri")
+
+non_fuel
+```
+
+    ## # A tibble: 150 x 2
+    ##    speed cost_per_km
+    ##    <int>       <dbl>
+    ##  1     1    95.23348
+    ##  2     2    50.03993
+    ##  3     3    34.97541
+    ##  4     4    27.44315
+    ##  5     5    22.92380
+    ##  6     6    19.91089
+    ##  7     7    17.75882
+    ##  8     8    16.14477
+    ##  9     9    14.88939
+    ## 10    10    13.88509
+    ## # ... with 140 more rows
+
+The output of the `fuel_cost_km` and `nonfuel_cost_km` can then be used to calculate overall vehicle operating costs using the `veh_op_costs` function.
+
+``` r
+veh_op <- veh_op_costs(opening_yr = 2019,
+                       appr_period = 30,
+                       resid_period = 0,
+                       disc_rate = 0.05,
+                       price_base_yr = 2011,
+                       ave_veh_occ = 1.2,
+                       traffic_proj = proj,
+                       speed_ex = 70,
+                       speed_prop = 100,
+                       fuel_costs = fuel,
+                       non_fuel_costs = non_fuel)
+
+veh_op %>% 
+    summarise(benefits = sum(disc_costs))
+```
+
+    ## # A tibble: 1 x 1
+    ##    benefits
+    ##       <dbl>
+    ## 1 -4.161028
+
+On the costs side, a table of scheme costs can be generated using the `costs_table` function.
+
+``` r
+costs <- cost_table(cost_est = 20000000,
+                    price_base_yr = 2011,
+                    opening_yr = 2019,
+                    appr_period = 30,
+                    resid_period = 0,
+                    cpi_base = 103.8,
+                    cpi_cost_est = 106.0,
+                    sppf = 1.3,
+                    spl = 0.8,
+                    cost_yrs = c(2017:2019),
+                    cost_prop = c(0.25, 0.5, 0.25))
+
+costs
+```
+
+    ## # A tibble: 3 x 2
+    ##    year    costs
+    ##   <int>    <dbl>
+    ## 1  2017  5092075
+    ## 2  2018 10184151
+    ## 3  2019  5092075
+
+Produce table of costs and benefits and calculate NPV and BCR.
+
+``` r
+costs_ben_table <- data_frame(year = costs$year[1]:time_ben$year[nrow(time_ben)]) %>% 
+    left_join(costs, by = "year") %>% 
+    left_join(time_ben, by = "year") %>% 
+    left_join(veh_op, by = "year") %>% 
+    rename(pvc = costs, time_ben = disc_ben, veh_op_costs = disc_costs) %>% 
+    mutate(pvb = time_ben + veh_op_costs)
+
+costs_ben_table %>%
+    summarise(pvb = sum(pvb, na.rm = TRUE),
+              pvc = sum(pvc, na.rm = TRUE),
+              npv = pvb - pvc,
+              bcr = pvb / pvc)
+```
+
+    ## # A tibble: 1 x 4
+    ##        pvb      pvc     npv      bcr
+    ##      <dbl>    <dbl>   <dbl>    <dbl>
+    ## 1 26427974 20368302 6059672 1.297505
