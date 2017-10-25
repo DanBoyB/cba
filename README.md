@@ -24,9 +24,9 @@ A set of functions for use in the cost-benefit analysis (cba) of TII simple road
 Example
 -------
 
-Undertake a simple cost-benefit analysis of an road upgrade project in Meath. The project consists of the upgrade of a 8km section of an existing single carriageway, consisting of a new 10km alginment of Type 1 dual carriageway. An observed AADT of 8,000 and a 5% HGV content on the road was measured in 2016, with average speeds measured as 70 kph. The scheme opening year is assumed to be 2019 and the design speed of the realigned section is 100 kph.
+Undertake a simple cost-benefit analysis of an road upgrade project in Meath. The project consists of the upgrade of a 8km section of an existing single carriageway, consisting of a new 10km alginment of Type 1 dual carriageway. An observed AADT of 18,000 and a 5% HGV content on the road was measured in 2016, with average speeds measured as 70 kph. The scheme opening year is assumed to be 2019 and the design speed of the realigned section is 100 kph.
 
-The scheme is estimated to cost €20 million in 2016 prices.
+The scheme is estimated to cost €15 million in 2016 prices.
 
 First, load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
 
@@ -49,7 +49,7 @@ library(tidyverse)
 
 ``` r
 proj <- traffic_proj(base_yr = 2016,
-                     base_aadt = 8000,
+                     base_aadt = 18000,
                      opening_yr = 2019,
                      pc_hgv = 0.05,
                      region = "Mid-East")
@@ -60,16 +60,16 @@ proj
     ## # A tibble: 76 x 4
     ##     year      lv       hv   total
     ##    <int>   <dbl>    <dbl>   <dbl>
-    ##  1  2016 2774000 146000.0 2920000
-    ##  2  2017 2812836 149460.2 2962296
-    ##  3  2018 2852216 153002.4 3005218
-    ##  4  2019 2892147 156628.6 3048775
-    ##  5  2020 2932637 160340.7 3092977
-    ##  6  2021 2973694 164140.7 3137834
-    ##  7  2022 3015325 168030.9 3183356
-    ##  8  2023 3057540 172013.2 3229553
-    ##  9  2024 3100346 176089.9 3276435
-    ## 10  2025 3143750 180263.2 3324014
+    ##  1  2016 6241500 328500.0 6570000
+    ##  2  2017 6328881 336285.5 6665166
+    ##  3  2018 6417485 344255.4 6761741
+    ##  4  2019 6507330 352414.3 6859744
+    ##  5  2020 6598433 360766.5 6959199
+    ##  6  2021 6690811 369316.7 7060127
+    ##  7  2022 6784482 378069.5 7162552
+    ##  8  2023 6879465 387029.7 7266495
+    ##  9  2024 6975777 396202.3 7371980
+    ## 10  2025 7073438 405592.3 7479031
     ## # ... with 66 more rows
 
 Next, calculate outline time savings using the `time_savings` function.
@@ -104,7 +104,7 @@ time_ben %>%
     ## # A tibble: 1 x 1
     ##   benefits
     ##      <dbl>
-    ## 1 26427978
+    ## 1 59462951
 
 Fuel and non-fuel operating costs for a vector of traffic speeds (eg. 1 - 150 kph) can be estimated using the `fuel_cost_km` and `nonfuel_cost_km` functions.
 
@@ -179,12 +179,12 @@ veh_op %>%
     ## # A tibble: 1 x 1
     ##    benefits
     ##       <dbl>
-    ## 1 -17343175
+    ## 1 -39022143
 
 On the costs side, a table of scheme costs can be generated using the `costs_table` function.
 
 ``` r
-costs <- cost_table(cost_est = 20000000,
+costs <- cost_table(cost_est = 15000000,
                     price_base_yr = 2011,
                     opening_yr = 2019,
                     appr_period = 30,
@@ -200,11 +200,11 @@ costs
 ```
 
     ## # A tibble: 3 x 2
-    ##    year    costs
-    ##   <int>    <dbl>
-    ## 1  2017  5092075
-    ## 2  2018 10184151
-    ## 3  2019  5092075
+    ##    year   costs
+    ##   <int>   <dbl>
+    ## 1  2017 3819057
+    ## 2  2018 7638113
+    ## 3  2019 3819057
 
 Produce a summary table of costs and benefits and calculate NPV and BCR using the `cost_benefit` function.
 
@@ -215,6 +215,6 @@ cost_benefit(cost_table = costs,
 ```
 
     ## # A tibble: 1 x 4
-    ##       pvb      pvc       npv       bcr
-    ##     <dbl>    <dbl>     <dbl>     <dbl>
-    ## 1 9084803 20368302 -11283499 0.4460265
+    ##        pvb      pvc     npv     bcr
+    ##      <dbl>    <dbl>   <dbl>   <dbl>
+    ## 1 20440807 15276226 5164581 1.33808

@@ -30,9 +30,9 @@ A set of functions for use in the cost-benefit analysis (cba) of TII simple road
 
 ## Example
 
-Undertake a simple cost-benefit analysis of an road upgrade project in Meath. The project consists of the upgrade of a 8km section of an existing single carriageway, consisting of a new 10km alginment of Type 1 dual carriageway. An observed AADT of 8,000 and a 5% HGV content on the road was measured in 2016, with average speeds measured as 70 kph. The scheme opening year is assumed to be 2019 and the design speed of the realigned section is 100 kph.
+Undertake a simple cost-benefit analysis of an road upgrade project in Meath. The project consists of the upgrade of a 8km section of an existing single carriageway, consisting of a new 10km alginment of Type 1 dual carriageway. An observed AADT of 18,000 and a 5% HGV content on the road was measured in 2016, with average speeds measured as 70 kph. The scheme opening year is assumed to be 2019 and the design speed of the realigned section is 100 kph.
 
-The scheme is estimated to cost €20 million in 2016 prices.
+The scheme is estimated to cost €15 million in 2016 prices.
 
 First, load the `tiicba` package and use the `traffic_proj`function to create a table of traffic flow projections using PAG Unit 5.3 link based growth projections
 
@@ -41,7 +41,7 @@ library(tiicba)
 library(tidyverse)
 
 proj <- traffic_proj(base_yr = 2016,
-                     base_aadt = 8000,
+                     base_aadt = 18000,
                      opening_yr = 2019,
                      pc_hgv = 0.05,
                      region = "Mid-East")
@@ -114,7 +114,7 @@ veh_op %>%
 
 On the costs side, a table of scheme costs can be generated using the `costs_table` function.
 ```{r}
-costs <- cost_table(cost_est = 20000000,
+costs <- cost_table(cost_est = 15000000,
                     price_base_yr = 2011,
                     opening_yr = 2019,
                     appr_period = 30,
