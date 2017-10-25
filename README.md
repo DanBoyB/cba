@@ -189,10 +189,12 @@ costs <- cost_table(cost_est = 15000000,
                     opening_yr = 2019,
                     appr_period = 30,
                     resid_period = 0,
+                    disc_rate = 0.05,
                     cpi_base = 103.8,
                     cpi_cost_est = 106.0,
                     sppf = 1.3,
                     spl = 0.8,
+                    labour_cont = 0.35,
                     cost_yrs = c(2017:2019),
                     cost_prop = c(0.25, 0.5, 0.25))
 
@@ -202,9 +204,9 @@ costs
     ## # A tibble: 3 x 2
     ##    year   costs
     ##   <int>   <dbl>
-    ## 1  2017 3819057
-    ## 2  2018 7638113
-    ## 3  2019 3819057
+    ## 1  2017 3312938
+    ## 2  2018 6310357
+    ## 3  2019 3004932
 
 Produce a summary table of costs and benefits and calculate NPV and BCR using the `cost_benefit` function.
 
@@ -217,4 +219,4 @@ cost_benefit(cost_table = costs,
     ## # A tibble: 1 x 4
     ##        pvb      pvc     npv     bcr
     ##      <dbl>    <dbl>   <dbl>   <dbl>
-    ## 1 20440807 15276226 5164581 1.33808
+    ## 1 20440807 12628227 7812580 1.61866
