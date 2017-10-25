@@ -22,72 +22,45 @@ fuel_cost_km <- function(speed,
                          fuel_cost_2011,
                          road_type) {
     
-    fuel_cons_table <- function(speed, 
-                                fuel_cons_param, 
-                                fuel_split, 
-                                fuel_cost_2011) {
+    if (missing(speed))
+        stop("Need to specify a vector of traffic speeds")
+    
+    if (missing(fuel_cons_param))
+        stop("Need to specify fuel consumption parameters")
         
-        if (missing(speed))
-            stop("Need to specify a vector of traffic speeds")
+    if (missing(fuel_split))
+        stop("Need to specify fleet splits by fuel type")
         
-        if (missing(fuel_cons_param))
-            stop("Need to specify fuel consumption parameters")
-        
-        if (missing(fuel_split))
-            stop("Need to specify fleet splits by fuel type")
-        
-        if (missing(fuel_cost_2011))
-            stop("Need to specify test base fuel costs")
-        
-        fuel_cons <- function(data) {
-            v <- speed
-            return (data_frame(speed = v,
-                               cons = (data$a + (data$b * v) + 
-                                           (data$c * (v ^2)) +
-                                           (data$d * (v ^ 3))) / v))
-        }
-        
-        cons <- fuel_cons_param %>% 
-            group_by(vehicle) %>% 
-            tidyr::nest() %>% 
-            tidyr::separate(vehicle, into = c("fuel", "veh"), sep = "_")  %>% 
-            mutate(cons = purrr::map(data, fuel_cons)) %>% 
-            select(-data) %>% 
-            tidyr::unnest()
-        
-        split <- fuel_split %>% 
-            tidyr::gather(fuel, prop, 2:3) %>% 
-            rename(veh = vehicle) %>% 
-            mutate(vehicle = paste(fuel, veh, sep = "_")) %>% 
-            select(vehicle, prop)
-        
-        cost <- fuel_cost_2011
-        
-        cons_veh <- cons %>% 
-            mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
-            left_join(split, by = "vehicle") %>%
-            left_join(cost, by = "fuel") %>%
-            mutate(cost_per_km = (cons * price) / 100) %>% 
-            group_by(speed, veh) %>% 
-            summarise(cons_w_ave = weighted.mean(cons, prop),
-                      cost_per_km = weighted.mean(cost_per_km, prop))
-        
-        return (cons_veh)
+    if (missing(fuel_cost_2011))
+        stop("Need to specify test base fuel costs")
+    
+    fuel_cons <- function(speed) {
+        param <- fuel_cons_param
+        v <- speed
+        cons <- (param[[2]] + (param[[3]] * v) + 
+                     (param[[4]] * (v ^2)) +
+                     (param[[5]] * (v ^ 3))) / v
+        return(cons)
     }
-
-    costs_table <- data_frame(v = speed) %>% 
-        mutate(cons = purrr::map(v, fuel_cons_table, 
-                                 fuel_cons_param = fuel_cons_param,
-                                 fuel_split = fuel_split,
-                                 fuel_cost_2011 = fuel_cost_2011)) %>% 
+    
+    cons_veh <- data_frame(speed = speed,
+                           vehicle = list(fuel_cons_param[[1]])) %>% 
+        mutate(cons = map(speed, fuel_cons)) %>% 
         tidyr::unnest() %>% 
-        select(-v)
+        tidyr::separate(vehicle, into = c("fuel", "veh"), sep = "_") %>% 
+        mutate(vehicle = paste(fuel, veh, sep = "_")) %>%
+        left_join(fuel_split, by = "vehicle") %>%
+        left_join(fuel_cost_2011, by = "fuel") %>%
+        mutate(cost_per_km = (cons * price) / 100) %>% 
+        group_by(speed, veh) %>% 
+        summarise(cons_w_ave = weighted.mean(cons, prop),
+                  cost_per_km = weighted.mean(cost_per_km, prop))
     
     veh_prop <- pag_611_T19 %>% 
         filter(road_type == road_type) %>% 
         rename(veh = vehicle)
     
-    costs_table <- costs_table %>% 
+    costs_table <- cons_veh %>% 
         left_join(veh_prop, by = "veh") %>% 
         group_by(speed) %>% 
         summarise(cost_per_km = weighted.mean(cost_per_km, prop))

@@ -1,6 +1,14 @@
+library(dplyr)
+
 fuel_cost_2011 <- readr::read_csv("data-raw/fuel-cost-2011.csv")
 fuel_cons_param <- readr::read_csv("data-raw/webTagA138.csv")
-fuel_split <- readr::read_csv("data-raw/fuel-split.csv")
+
+fuel_split <- readr::read_csv("data-raw/fuel-split.csv") %>% 
+    tidyr::gather(fuel, prop, 2:3) %>% 
+    rename(veh = vehicle) %>% 
+    mutate(vehicle = paste(fuel, veh, sep = "_")) %>% 
+    select(vehicle, prop)
+
 pag_t532 <- readr::read_csv("data-raw/pagT532.csv")
 non_fuel_param <- readr::read_csv("data-raw/non-fuel-param.csv")
 w_ave_vot <- readr::read_csv("data-raw/w-ave-vot.csv")
