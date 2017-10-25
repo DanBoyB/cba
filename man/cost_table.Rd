@@ -5,8 +5,9 @@
 \title{Scheme cost profile}
 \usage{
 cost_table(cost_est, price_base_yr = 2011, opening_yr, appr_period = 30,
-  resid_period = 0, cpi_base = 99.4, cpi_cost_est, sppf = 1.3, spl = 1,
-  cost_yrs = c(2022:2025), cost_prop = c(0.116, 0.437, 0.409, 0.038))
+  disc_rate = 0.05, resid_period = 0, cpi_base = 99.4, cpi_cost_est,
+  sppf = 1.3, spl = 1, labour_cont = 0.35, cost_yrs = c(2022:2025),
+  cost_prop = c(0.116, 0.437, 0.409, 0.038))
 }
 \arguments{
 \item{cost_est}{The cost estimate for the scheme,  entered in factor prices (millions)}
@@ -16,6 +17,8 @@ cost_table(cost_est, price_base_yr = 2011, opening_yr, appr_period = 30,
 \item{opening_yr}{The assumed opening year for the scheme}
 
 \item{appr_period}{The period in years over which the scheme is being appraised. Defaults to 30.}
+
+\item{disc_rate}{The test discount rate as a decimal.}
 
 \item{resid_period}{The period in years, after the appraisal period which is assumed to represent the 
 residual value of the scheme. Defaults to 0.}

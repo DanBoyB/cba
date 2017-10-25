@@ -5,6 +5,7 @@
 #' @param price_base_yr The price base year assumed for the appraisal. Defaults to 2011
 #' @param opening_yr The assumed opening year for the scheme
 #' @param appr_period The period in years over which the scheme is being appraised. Defaults to 30.
+#' @param disc_rate The test discount rate as a decimal.
 #' @param resid_period The period in years, after the appraisal period which is assumed to represent the 
 #' residual value of the scheme. Defaults to 0.
 #' @param cpi_base The consumer price index for the price base year. Defaults tp 103.8 for 2011 (base Dec 2006)
@@ -19,9 +20,18 @@
 #' @export
 
 
-cost_table <- function(cost_est, price_base_yr = 2011, opening_yr, appr_period = 30, 
-                       resid_period = 0, cpi_base = 99.4, cpi_cost_est, sppf = 1.3, 
-                       spl = 1.0, cost_yrs = c(2022:2025), 
+cost_table <- function(cost_est, 
+                       price_base_yr = 2011, 
+                       opening_yr, 
+                       appr_period = 30,
+                       disc_rate = 0.05,
+                       resid_period = 0,
+                       cpi_base = 99.4, 
+                       cpi_cost_est, 
+                       sppf = 1.3, 
+                       spl = 1.0,
+                       labour_cont = 0.35,
+                       cost_yrs = c(2022:2025), 
                        cost_prop = c(0.116, 0.437, 0.409, 0.038)) {
     
     if (missing(cost_est))
@@ -57,7 +67,9 @@ cost_table <- function(cost_est, price_base_yr = 2011, opening_yr, appr_period =
     if (missing(cost_prop))
         stop("Need to specify test proportion of costs spent by year")
     
-    cost_est_adj <- cost_est * (cpi_base / cpi_cost_est) * sppf * spl
+    labour_adj_cost <- (cost_est * labour_cont * spl) + (cost_est - (cost_est * labour_cont))
+    
+    cost_est_adj <- labour_adj_cost * (cpi_base / cpi_cost_est) * sppf
     
     cost_prop <- data_frame(year = cost_yrs, prop = cost_prop)
     
@@ -67,8 +79,11 @@ cost_table <- function(cost_est, price_base_yr = 2011, opening_yr, appr_period =
     
     
     cost_table <- cost_profile %>% 
-        mutate(costs = cost_est_adj * cost_profile$prop) %>% 
-        select(year, costs) %>% 
+        mutate(undisc_costs = cost_est_adj * cost_profile$prop,
+               disc_costs = undisc_costs / ((1 + disc_rate) ^ 
+                                              (year - price_base_yr))) %>% 
+        select(year, disc_costs) %>% 
+        rename(costs = disc_costs) %>% 
         filter(!is.na(costs))
     
     cost_table
