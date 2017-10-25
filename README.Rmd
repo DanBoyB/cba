@@ -129,21 +129,12 @@ costs <- cost_table(cost_est = 20000000,
 costs
 ```
 
-Produce table of costs and benefits and calculate NPV and BCR.
+Produce a summary table of costs and benefits and calculate NPV and BCR using the `cost_benefit` function.
 
 ```{r}
-costs_ben_table <- data_frame(year = costs$year[1]:time_ben$year[nrow(time_ben)]) %>% 
-    left_join(costs, by = "year") %>% 
-    left_join(time_ben, by = "year") %>% 
-    left_join(veh_op, by = "year") %>% 
-    rename(pvc = costs, time_ben = disc_ben, veh_op_costs = disc_costs) %>% 
-    mutate(pvb = time_ben + veh_op_costs)
-
-costs_ben_table %>%
-    summarise(pvb = sum(pvb, na.rm = TRUE),
-              pvc = sum(pvc, na.rm = TRUE),
-              npv = pvb - pvc,
-              bcr = pvb / pvc)
+cost_benefit(cost_table = costs,
+             time_benefits = time_ben,
+             veh_op_costs = veh_op)
     
 ```
 
