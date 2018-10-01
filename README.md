@@ -220,3 +220,4 @@ cost_benefit(cost_table = costs,
     ##        pvb      pvc     npv     bcr
     ##      <dbl>    <dbl>   <dbl>   <dbl>
     ## 1 20440807 12628227 7812580 1.61866
+TODO: add matrix operation capability
